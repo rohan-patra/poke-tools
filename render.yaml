@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: poke-tools
+    runtime: docker
+    plan: starter
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: '3000'
+      - key: POKE_BEARER_TOKEN
+        sync: false
+      - key: SLACK_EVENTS_ENABLED
+        value: 'true'
+      - key: SLACK_SIGNING_SECRET
+        sync: false
+      - key: SLACK_BOT_TOKEN
+        sync: false
+      - key: SLACK_MCP_ENABLED
+        value: 'true'
+      - key: SLACK_MCP_AUTH_MODE
+        value: browser
+      - key: SLACK_MCP_XOXC_TOKEN
+        sync: false
+      - key: SLACK_MCP_XOXD_TOKEN
+        sync: false
