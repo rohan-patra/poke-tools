@@ -8,6 +8,7 @@ import { McpRouter } from './routers/mcp.js';
 import { PollingManager } from './servers/polling/index.js';
 import { PokeClient } from './integrations/poke/index.js';
 import { SlackModule } from './modules/slack/index.js';
+import { MoltbookModule } from './modules/moltbook/index.js';
 
 async function main() {
   const config = loadConfig();
@@ -71,6 +72,24 @@ async function main() {
     }
     if (endpoints.mcp.length > 0) {
       logger.info({ endpoints: endpoints.mcp }, '[slack-mcp] MCP proxy endpoints registered');
+    }
+  }
+
+  // Moltbook module
+  if (config.moltbook.enabled) {
+    const moltbookModule = new MoltbookModule(
+      config,
+      moduleContext,
+      pokeClient,
+      logger.child({ module: 'moltbook' })
+    );
+    await moltbookModule.initialize();
+    modules.push(moltbookModule);
+
+    // Log endpoints
+    const endpoints = moltbookModule.getEndpoints();
+    if (endpoints.length > 0) {
+      logger.info({ endpoints }, '[moltbook] MCP proxy endpoints registered');
     }
   }
 

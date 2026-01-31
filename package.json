@@ -10,7 +10,8 @@
     "start": "node --env-file=.env dist/index.js",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "moltbook:register": "tsx src/scripts/moltbook-register.ts"
   },
   "keywords": [
     "poke",

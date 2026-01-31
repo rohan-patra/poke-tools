@@ -1,4 +1,9 @@
-import { loadEnv, type SlackWorkspaceEnv, type SlackMcpWorkspaceEnv } from './env.js';
+import {
+  loadEnv,
+  type SlackWorkspaceEnv,
+  type SlackMcpWorkspaceEnv,
+  type MoltbookWorkspaceEnv,
+} from './env.js';
 
 export interface SlackWorkspaceConfig {
   name: string;
@@ -19,6 +24,15 @@ export interface SlackMcpWorkspaceConfig {
     xoxb?: string;
   };
   addMessageTool?: string;
+}
+
+export interface MoltbookWorkspaceConfig {
+  name: string;
+  endpoint: string;
+  apiKey: string;
+  pollingEnabled: boolean;
+  pollingInterval: number;
+  feedSort: 'hot' | 'new' | 'top' | 'rising';
 }
 
 export interface AppConfig {
@@ -42,10 +56,15 @@ export interface AppConfig {
       workspaces: SlackMcpWorkspaceConfig[];
     };
   };
+
+  moltbook: {
+    enabled: boolean;
+    workspaces: MoltbookWorkspaceConfig[];
+  };
 }
 
 export function loadConfig(): AppConfig {
-  const { env, slackWorkspaces, slackMcpWorkspaces } = loadEnv();
+  const { env, slackWorkspaces, slackMcpWorkspaces, moltbookWorkspaces } = loadEnv();
 
   return {
     env: env.NODE_ENV,
@@ -87,7 +106,21 @@ export function loadConfig(): AppConfig {
         ),
       },
     },
+
+    moltbook: {
+      enabled: env.MOLTBOOK_ENABLED,
+      workspaces: moltbookWorkspaces.map(
+        (ws: MoltbookWorkspaceEnv): MoltbookWorkspaceConfig => ({
+          name: ws.name,
+          endpoint: ws.endpoint,
+          apiKey: ws.apiKey,
+          pollingEnabled: ws.pollingEnabled,
+          pollingInterval: ws.pollingInterval,
+          feedSort: ws.feedSort,
+        })
+      ),
+    },
   };
 }
 
-export type { SlackWorkspaceEnv, SlackMcpWorkspaceEnv };
+export type { SlackWorkspaceEnv, SlackMcpWorkspaceEnv, MoltbookWorkspaceEnv };

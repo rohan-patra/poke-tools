@@ -10,6 +10,18 @@ const slackWorkspaceSchema = z.object({
 
 export type SlackWorkspaceEnv = z.infer<typeof slackWorkspaceSchema>;
 
+// Schema for a single Moltbook workspace
+const moltbookWorkspaceSchema = z.object({
+  name: z.string().min(1),
+  endpoint: z.string().min(1),
+  apiKey: z.string().min(1),
+  pollingEnabled: z.coerce.boolean().default(false),
+  pollingInterval: z.coerce.number().default(300000), // 5 minutes
+  feedSort: z.enum(['hot', 'new', 'top', 'rising']).default('new'),
+});
+
+export type MoltbookWorkspaceEnv = z.infer<typeof moltbookWorkspaceSchema>;
+
 // Schema for a single Slack MCP workspace
 const slackMcpWorkspaceSchema = z
   .object({
@@ -54,6 +66,9 @@ const envSchema = z.object({
   SLACK_MCP_ENABLED: z.coerce.boolean().default(false),
   SLACK_MCP_BINARY_PATH: z.string().default('slack-mcp-server'),
   SLACK_MCP_INTERNAL_PORT_START: z.coerce.number().default(13080),
+
+  // Moltbook - multiple workspaces supported via MOLTBOOK_N_* pattern
+  MOLTBOOK_ENABLED: z.coerce.boolean().default(false),
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -172,10 +187,64 @@ function parseSlackMcpWorkspaces(): SlackMcpWorkspaceEnv[] {
   return workspaces;
 }
 
+/**
+ * Parse Moltbook workspace configs from environment variables.
+ * Looks for MOLTBOOK_N_* pattern where N is 1, 2, 3, etc.
+ *
+ * Example:
+ *   MOLTBOOK_1_NAME=poke-agent
+ *   MOLTBOOK_1_ENDPOINT=a1b2c3d4e5f6...
+ *   MOLTBOOK_1_API_KEY=moltbook_xxx
+ *   MOLTBOOK_1_POLLING_ENABLED=true
+ *   MOLTBOOK_1_POLLING_INTERVAL=300000
+ *   MOLTBOOK_1_FEED_SORT=new
+ */
+function parseMoltbookWorkspaces(): MoltbookWorkspaceEnv[] {
+  const workspaces: MoltbookWorkspaceEnv[] = [];
+  let index = 1;
+
+  while (true) {
+    const prefix = `MOLTBOOK_${index}_`;
+    const name = process.env[`${prefix}NAME`];
+    const endpoint = process.env[`${prefix}ENDPOINT`];
+    const apiKey = process.env[`${prefix}API_KEY`];
+    const pollingEnabled = process.env[`${prefix}POLLING_ENABLED`];
+    const pollingInterval = process.env[`${prefix}POLLING_INTERVAL`];
+    const feedSort = process.env[`${prefix}FEED_SORT`];
+
+    // Stop if no more workspaces defined
+    if (!name && !endpoint && !apiKey) {
+      break;
+    }
+
+    // Validate this workspace
+    const result = moltbookWorkspaceSchema.safeParse({
+      name,
+      endpoint,
+      apiKey,
+      pollingEnabled,
+      pollingInterval,
+      feedSort,
+    });
+
+    if (!result.success) {
+      console.error(`Invalid Moltbook workspace ${index} configuration:`);
+      console.error(result.error.format());
+      process.exit(1);
+    }
+
+    workspaces.push(result.data);
+    index++;
+  }
+
+  return workspaces;
+}
+
 export interface LoadEnvResult {
   env: Env;
   slackWorkspaces: SlackWorkspaceEnv[];
   slackMcpWorkspaces: SlackMcpWorkspaceEnv[];
+  moltbookWorkspaces: MoltbookWorkspaceEnv[];
 }
 
 export function loadEnv(): LoadEnvResult {
@@ -189,6 +258,7 @@ export function loadEnv(): LoadEnvResult {
 
   const slackWorkspaces = parseSlackWorkspaces();
   const slackMcpWorkspaces = parseSlackMcpWorkspaces();
+  const moltbookWorkspaces = parseMoltbookWorkspaces();
 
   // Validate that workspaces are defined if events are enabled
   if (result.data.SLACK_EVENTS_ENABLED && slackWorkspaces.length === 0) {
@@ -206,9 +276,17 @@ export function loadEnv(): LoadEnvResult {
     process.exit(1);
   }
 
+  // Validate that Moltbook workspaces are defined if Moltbook is enabled
+  if (result.data.MOLTBOOK_ENABLED && moltbookWorkspaces.length === 0) {
+    console.error('MOLTBOOK_ENABLED is true but no Moltbook workspaces defined.');
+    console.error('Define at least one workspace using MOLTBOOK_1_NAME, MOLTBOOK_1_ENDPOINT, etc.');
+    process.exit(1);
+  }
+
   return {
     env: result.data,
     slackWorkspaces,
     slackMcpWorkspaces,
+    moltbookWorkspaces,
   };
 }
