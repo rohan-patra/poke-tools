@@ -54,6 +54,24 @@ const envSchema = z.object({
   SLACK_MCP_ENABLED: z.coerce.boolean().default(false),
   SLACK_MCP_BINARY_PATH: z.string().default('slack-mcp-server'),
   SLACK_MCP_INTERNAL_PORT_START: z.coerce.number().default(13080),
+
+  // Telegram Integration
+  TELEGRAM_ENABLED: z.coerce.boolean().default(false),
+  TELEGRAM_MCP_ENDPOINT: z
+    .string()
+    .default('5fb1f15f1226e257ab87b202ebdf9a64ef8abed1e05d69cc9d5dbd97aa1eeb7b'),
+  TELEGRAM_MCP_INTERNAL_PORT: z.coerce.number().default(8080),
+  TELEGRAM_MCP_BINARY_PATH: z.string().default('tgcli'),
+  TELEGRAM_POLL_INTERVAL: z.coerce.number().default(30000),
+
+  // Telegram API credentials (from my.telegram.org)
+  TELEGRAM_API_ID: z.string().optional(),
+  TELEGRAM_API_HASH: z.string().optional(),
+  TELEGRAM_PHONE_NUMBER: z.string().optional(),
+  // Optional: Custom store directory for tgcli session/config
+  TELEGRAM_STORE_DIR: z.string().optional(),
+  // Optional: Base64-encoded session.json content (for containerized deployments)
+  TELEGRAM_SESSION: z.string().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

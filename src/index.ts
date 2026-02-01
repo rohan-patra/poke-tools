@@ -8,6 +8,7 @@ import { McpRouter } from './routers/mcp.js';
 import { PollingManager } from './servers/polling/index.js';
 import { PokeClient } from './integrations/poke/index.js';
 import { SlackModule } from './modules/slack/index.js';
+import { TelegramModule } from './modules/telegram/index.js';
 
 async function main() {
   const config = loadConfig();
@@ -72,6 +73,21 @@ async function main() {
     if (endpoints.mcp.length > 0) {
       logger.info({ endpoints: endpoints.mcp }, '[slack-mcp] MCP proxy endpoints registered');
     }
+  }
+
+  // Telegram module
+  if (config.telegram.enabled) {
+    const telegramModule = new TelegramModule(
+      config,
+      moduleContext,
+      pokeClient,
+      logger.child({ module: 'telegram' })
+    );
+    await telegramModule.initialize();
+    modules.push(telegramModule);
+
+    const endpoints = telegramModule.getEndpoints();
+    logger.info({ endpoint: endpoints.mcp }, '[telegram] MCP proxy endpoint registered');
   }
 
   // Attach routers to Fastify

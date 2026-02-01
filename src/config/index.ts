@@ -21,6 +21,25 @@ export interface SlackMcpWorkspaceConfig {
   addMessageTool?: string;
 }
 
+export interface TelegramConfig {
+  enabled: boolean;
+  mcp: {
+    endpoint: string;
+    internalPort: number;
+    binaryPath: string;
+  };
+  polling: {
+    interval: number;
+  };
+  credentials: {
+    apiId?: string;
+    apiHash?: string;
+    phoneNumber?: string;
+  };
+  storeDir?: string;
+  session?: string; // Base64-encoded session.json content
+}
+
 export interface AppConfig {
   env: 'development' | 'staging' | 'production';
   port: number;
@@ -42,6 +61,8 @@ export interface AppConfig {
       workspaces: SlackMcpWorkspaceConfig[];
     };
   };
+
+  telegram: TelegramConfig;
 }
 
 export function loadConfig(): AppConfig {
@@ -86,6 +107,25 @@ export function loadConfig(): AppConfig {
           })
         ),
       },
+    },
+
+    telegram: {
+      enabled: env.TELEGRAM_ENABLED,
+      mcp: {
+        endpoint: env.TELEGRAM_MCP_ENDPOINT,
+        internalPort: env.TELEGRAM_MCP_INTERNAL_PORT,
+        binaryPath: env.TELEGRAM_MCP_BINARY_PATH,
+      },
+      polling: {
+        interval: env.TELEGRAM_POLL_INTERVAL,
+      },
+      credentials: {
+        apiId: env.TELEGRAM_API_ID,
+        apiHash: env.TELEGRAM_API_HASH,
+        phoneNumber: env.TELEGRAM_PHONE_NUMBER,
+      },
+      storeDir: env.TELEGRAM_STORE_DIR,
+      session: env.TELEGRAM_SESSION,
     },
   };
 }
