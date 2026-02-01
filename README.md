@@ -2,6 +2,8 @@
 
 A Node.js server that integrates external platforms with [Poke](https://poke.com), an AI agent platform. Provides webhook handlers and MCP (Model Context Protocol) proxies for Slack.
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/rohan-patra/poke-tools)
+
 ## Features
 
 - **Slack Integration**
@@ -40,37 +42,38 @@ Configuration is done via environment variables. See `.env.example` for all avai
 
 ### Server
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `PORT` | Server port | `3000` |
-| `NODE_ENV` | Environment (`development` / `production`) | `development` |
-| `POKE_BEARER_TOKEN` | Bearer token for Poke API | Required |
+| Variable            | Description                                | Default       |
+| ------------------- | ------------------------------------------ | ------------- |
+| `PORT`              | Server port                                | `3000`        |
+| `NODE_ENV`          | Environment (`development` / `production`) | `development` |
+| `POKE_BEARER_TOKEN` | Bearer token for Poke API                  | Required      |
 
 ### Slack Events
 
 Enable webhook handling for Slack events. Supports multiple workspaces.
 
-| Variable | Description |
-|----------|-------------|
-| `SLACK_EVENTS_ENABLED` | Enable/disable Slack events (`true`/`false`) |
-| `SLACK_WORKSPACE_N_NAME` | Workspace name |
-| `SLACK_WORKSPACE_N_ENDPOINT` | Webhook endpoint path |
-| `SLACK_WORKSPACE_N_SIGNING_SECRET` | Slack signing secret for verification |
-| `SLACK_WORKSPACE_N_BOT_TOKEN` | Slack bot/user token |
+| Variable                           | Description                                  |
+| ---------------------------------- | -------------------------------------------- |
+| `SLACK_EVENTS_ENABLED`             | Enable/disable Slack events (`true`/`false`) |
+| `SLACK_WORKSPACE_N_NAME`           | Workspace name                               |
+| `SLACK_WORKSPACE_N_ENDPOINT`       | Webhook endpoint path                        |
+| `SLACK_WORKSPACE_N_SIGNING_SECRET` | Slack signing secret for verification        |
+| `SLACK_WORKSPACE_N_BOT_TOKEN`      | Slack bot/user token                         |
 
 ### Slack MCP Proxy
 
 Enable MCP proxy for Slack, powered by [slack-mcp-server](https://github.com/korotovsky/slack-mcp-server).
 
-| Variable | Description |
-|----------|-------------|
-| `SLACK_MCP_ENABLED` | Enable/disable Slack MCP (`true`/`false`) |
-| `SLACK_MCP_N_NAME` | Workspace name |
-| `SLACK_MCP_N_ENDPOINT` | MCP endpoint path |
-| `SLACK_MCP_N_AUTH_MODE` | Auth mode: `browser`, `oauth`, or `bot` |
+| Variable                       | Description                                                            |
+| ------------------------------ | ---------------------------------------------------------------------- |
+| `SLACK_MCP_ENABLED`            | Enable/disable Slack MCP (`true`/`false`)                              |
+| `SLACK_MCP_N_NAME`             | Workspace name                                                         |
+| `SLACK_MCP_N_ENDPOINT`         | MCP endpoint path                                                      |
+| `SLACK_MCP_N_AUTH_MODE`        | Auth mode: `browser`, `oauth`, or `bot`                                |
 | `SLACK_MCP_N_ADD_MESSAGE_TOOL` | Enable message sending (`true`, channel IDs, or `!channel` to exclude) |
 
 **Auth modes:**
+
 - `browser` - Requires `XOXC_TOKEN` and `XOXD_TOKEN` (full access)
 - `oauth` - Requires `XOXP_TOKEN` (user token from OAuth)
 - `bot` - Requires `XOXB_TOKEN` (limited: no search, invited channels only)
@@ -99,22 +102,22 @@ docker run -p 3000:3000 --env-file .env poke-tools
 
 ## API Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/health` | GET | Health check with module status |
-| `/webhooks/:endpoint` | POST | Webhook receiver (Slack events) |
-| `/mcp/:endpoint` | * | MCP protocol handlers |
+| Endpoint              | Method | Description                     |
+| --------------------- | ------ | ------------------------------- |
+| `/health`             | GET    | Health check with module status |
+| `/webhooks/:endpoint` | POST   | Webhook receiver (Slack events) |
+| `/mcp/:endpoint`      | \*     | MCP protocol handlers           |
 
 ## Scripts
 
-| Script | Description |
-|--------|-------------|
-| `pnpm dev` | Start development server with hot reload |
-| `pnpm build` | Compile TypeScript to `dist/` |
-| `pnpm start` | Run production server |
-| `pnpm typecheck` | Type check without emitting |
-| `pnpm format` | Format code with Prettier |
-| `pnpm format:check` | Check code formatting |
+| Script              | Description                              |
+| ------------------- | ---------------------------------------- |
+| `pnpm dev`          | Start development server with hot reload |
+| `pnpm build`        | Compile TypeScript to `dist/`            |
+| `pnpm start`        | Run production server                    |
+| `pnpm typecheck`    | Type check without emitting              |
+| `pnpm format`       | Format code with Prettier                |
+| `pnpm format:check` | Check code formatting                    |
 
 ## Project Structure
 
