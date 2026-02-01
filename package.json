@@ -9,8 +9,10 @@
     "build": "tsc",
     "start": "node --env-file=.env dist/index.js",
     "typecheck": "tsc --noEmit",
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format": "biome format --write .",
+    "format:check": "biome check .",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write ."
   },
   "keywords": [
     "poke",
@@ -32,8 +34,8 @@
     "zod": "^3.24.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.3.13",
     "@types/node": "^22.0.0",
-    "prettier": "^3.8.1",
     "tsx": "^4.19.0",
     "typescript": "^5.7.0"
   }
