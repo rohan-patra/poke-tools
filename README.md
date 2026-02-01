@@ -24,7 +24,7 @@ A Node.js server that integrates external platforms with [Poke](https://poke.com
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/poke-tools.git
+git clone https://github.com/rohan-patra/poke-tools.git
 cd poke-tools
 
 # Install dependencies
