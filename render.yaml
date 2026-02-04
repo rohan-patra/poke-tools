@@ -13,15 +13,25 @@ services:
         sync: false
       - key: SLACK_EVENTS_ENABLED
         value: 'true'
-      - key: SLACK_SIGNING_SECRET
+      - key: SLACK_WORKSPACE_1_NAME
+        value: seismic
+      - key: SLACK_WORKSPACE_1_ENDPOINT
         sync: false
-      - key: SLACK_BOT_TOKEN
+      - key: SLACK_WORKSPACE_1_SIGNING_SECRET
+        sync: false
+      - key: SLACK_WORKSPACE_1_BOT_TOKEN
         sync: false
       - key: SLACK_MCP_ENABLED
         value: 'true'
-      - key: SLACK_MCP_AUTH_MODE
+      - key: SLACK_MCP_1_NAME
+        value: Seismic
+      - key: SLACK_MCP_1_ENDPOINT
+        sync: false
+      - key: SLACK_MCP_1_AUTH_MODE
         value: browser
-      - key: SLACK_MCP_XOXC_TOKEN
+      - key: SLACK_MCP_1_XOXC_TOKEN
         sync: false
-      - key: SLACK_MCP_XOXD_TOKEN
+      - key: SLACK_MCP_1_XOXD_TOKEN
         sync: false
+      - key: SLACK_MCP_1_ADD_MESSAGE_TOOL
+        value: 'true'
