@@ -10,6 +10,7 @@ export interface SlackEventsConfig {
   workspace: string;
   signingSecret: string;
   botToken: string;
+  channelBlocklist: string[];
 }
 
 export class SlackEventsModule {
@@ -79,6 +80,15 @@ export class SlackEventsModule {
 
     if (!isRegularMessage(event)) {
       this.logger.debug({ type: event.type, subtype: event.subtype }, 'Ignoring non-regular message');
+      return;
+    }
+
+    // Check if channel is in blocklist
+    if (this.config.channelBlocklist.includes(event.channel)) {
+      this.logger.debug(
+        { workspace: this.config.workspace, channel: event.channel },
+        'Ignoring message from blocklisted channel'
+      );
       return;
     }
 

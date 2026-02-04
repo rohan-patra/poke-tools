@@ -39,6 +39,7 @@ export class SlackModule implements Module {
             workspace: workspaceConfig.name,
             signingSecret: workspaceConfig.signingSecret,
             botToken: workspaceConfig.botToken,
+            channelBlocklist: workspaceConfig.channelBlocklist,
           },
           this.pokeClient,
           this.logger.child({ module: 'slack-events', workspace: workspaceConfig.name })

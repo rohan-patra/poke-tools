@@ -5,6 +5,7 @@ export interface SlackWorkspaceConfig {
   endpoint: string;
   signingSecret: string;
   botToken: string;
+  channelBlocklist: string[];
 }
 
 export interface SlackMcpWorkspaceConfig {
@@ -65,6 +66,7 @@ export function loadConfig(): AppConfig {
           endpoint: ws.endpoint,
           signingSecret: ws.signingSecret,
           botToken: ws.botToken,
+          channelBlocklist: ws.channelBlocklist,
         })),
       },
       mcp: {

@@ -6,6 +6,7 @@ const slackWorkspaceSchema = z.object({
   endpoint: z.string().min(1),
   signingSecret: z.string().min(1),
   botToken: z.string().min(1),
+  channelBlocklist: z.array(z.string()).default([]),
 });
 
 export type SlackWorkspaceEnv = z.infer<typeof slackWorkspaceSchema>;
@@ -67,12 +68,25 @@ export type Env = z.infer<typeof envSchema>;
  *   SLACK_WORKSPACE_1_ENDPOINT=workspaceendpoint1
  *   SLACK_WORKSPACE_1_SIGNING_SECRET=xxx
  *   SLACK_WORKSPACE_1_BOT_TOKEN=xoxp-xxx
+ *   SLACK_WORKSPACE_1_CHANNEL_BLOCKLIST=C123,C456  # Optional: comma-separated channel IDs to ignore
  *
  *   SLACK_WORKSPACE_2_NAME=acme
  *   SLACK_WORKSPACE_2_ENDPOINT=abc123...
  *   SLACK_WORKSPACE_2_SIGNING_SECRET=yyy
  *   SLACK_WORKSPACE_2_BOT_TOKEN=xoxp-yyy
  */
+/**
+ * Parse a comma-separated list of channel IDs into an array.
+ * Example: "C123,C456,C789" -> ["C123", "C456", "C789"]
+ */
+function parseChannelList(value: string | undefined): string[] {
+  if (!value) return [];
+  return value
+    .split(',')
+    .map((ch) => ch.trim())
+    .filter((ch) => ch.length > 0);
+}
+
 function parseSlackWorkspaces(): SlackWorkspaceEnv[] {
   const workspaces: SlackWorkspaceEnv[] = [];
   let index = 1;
@@ -83,6 +97,7 @@ function parseSlackWorkspaces(): SlackWorkspaceEnv[] {
     const endpoint = process.env[`${prefix}ENDPOINT`];
     const signingSecret = process.env[`${prefix}SIGNING_SECRET`];
     const botToken = process.env[`${prefix}BOT_TOKEN`];
+    const channelBlocklist = parseChannelList(process.env[`${prefix}CHANNEL_BLOCKLIST`]);
 
     // Stop if no more workspaces defined
     if (!name && !endpoint && !signingSecret && !botToken) {
@@ -95,6 +110,7 @@ function parseSlackWorkspaces(): SlackWorkspaceEnv[] {
       endpoint,
       signingSecret,
       botToken,
+      channelBlocklist,
     });
 
     if (!result.success) {
