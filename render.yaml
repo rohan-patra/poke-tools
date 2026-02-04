@@ -2,7 +2,7 @@ services:
   - type: web
     name: poke-tools
     runtime: docker
-    plan: starter
+    plan: free
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
