@@ -1,10 +1,16 @@
-import type { FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 import type { Logger } from '../../../core/logger.js';
-import type { WebhookHandler, ModuleHealth } from '../../../core/types.js';
+import type { ModuleHealth, WebhookHandler } from '../../../core/types.js';
 import type { PokeClient } from '../../../integrations/poke/index.js';
-import { verifySlackSignature } from './verify.js';
+import type { SlackClient } from '../../../integrations/slack/index.js';
 import { handleChallenge } from './challenge.js';
-import { formatSlackMessageForPoke, isRegularMessage, type SlackEventPayload } from './formatter.js';
+import {
+  formatSlackMessageForPoke,
+  isRegularMessage,
+  type MessageContext,
+  type SlackEventPayload,
+} from './formatter.js';
+import { verifySlackSignature } from './verify.js';
 
 export interface SlackEventsConfig {
   workspace: string;
@@ -19,6 +25,7 @@ export class SlackEventsModule {
   constructor(
     private config: SlackEventsConfig,
     private pokeClient: PokeClient,
+    private slackClient: SlackClient,
     private logger: Logger
   ) {}
 
@@ -92,13 +99,36 @@ export class SlackEventsModule {
       return;
     }
 
-    const message = formatSlackMessageForPoke(event, this.config.workspace);
+    // Fetch additional context (channel and user display names)
+    const context = await this.fetchMessageContext(event.channel, event.user);
+
+    const message = formatSlackMessageForPoke(event, this.config.workspace, context);
     this.logger.info(
       { workspace: this.config.workspace, channel: event.channel, user: event.user },
       'Forwarding Slack message to Poke'
     );
 
     await this.pokeClient.sendInboundMessage(message);
+  }
+
+  private async fetchMessageContext(channelId: string, userId: string): Promise<MessageContext> {
+    const context: MessageContext = {};
+
+    // Fetch channel and user info in parallel
+    const [channelInfo, userInfo] = await Promise.all([
+      this.slackClient.getChannelInfo(channelId),
+      this.slackClient.getUserInfo(userId),
+    ]);
+
+    if (channelInfo) {
+      context.channelName = channelInfo.name;
+    }
+
+    if (userInfo) {
+      context.userName = userInfo.realName || userInfo.name;
+    }
+
+    return context;
   }
 
   async healthCheck(): Promise<ModuleHealth> {

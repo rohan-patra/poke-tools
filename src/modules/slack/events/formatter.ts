@@ -19,14 +19,24 @@ export interface SlackEventPayload {
   event_time: number;
 }
 
+export interface MessageContext {
+  channelName?: string;
+  userName?: string;
+}
+
 /**
  * Formats a Slack message event into a string for Poke.
  * Includes message content and MCP-compatible identifiers for context lookup.
  *
  * @param event - The Slack message event
  * @param workspace - Workspace identifier (e.g., "workspace1", "acme")
+ * @param context - Optional context with display names for channel and user
  */
-export function formatSlackMessageForPoke(event: SlackMessageEvent, workspace: string): string {
+export function formatSlackMessageForPoke(
+  event: SlackMessageEvent,
+  workspace: string,
+  context?: MessageContext
+): string {
   const text = convertMrkdwnToPlainText(event.text);
 
   // Build a concise message with identifiers for MCP lookup
@@ -34,7 +44,13 @@ export function formatSlackMessageForPoke(event: SlackMessageEvent, workspace: s
 
   // Header split into workspace and channel parts
   parts.push(`[Slack:${workspace}]`);
-  parts.push(`channel:${event.channel}`);
+
+  // Channel with optional display name
+  if (context?.channelName) {
+    parts.push(`channel:${event.channel} (#${context.channelName})`);
+  } else {
+    parts.push(`channel:${event.channel}`);
+  }
 
   // Thread context if in a thread (use thread_ts for MCP lookup via conversations_replies)
   if (event.thread_ts) {
@@ -44,8 +60,12 @@ export function formatSlackMessageForPoke(event: SlackMessageEvent, workspace: s
   // Message timestamp (can be used with channel_id for precise message lookup)
   parts.push(`ts:${event.ts}`);
 
-  // User who sent the message
-  parts.push(`from:${event.user}`);
+  // User who sent the message with optional display name
+  if (context?.userName) {
+    parts.push(`from:${event.user} (${context.userName})`);
+  } else {
+    parts.push(`from:${event.user}`);
+  }
 
   // The actual message content
   parts.push('');

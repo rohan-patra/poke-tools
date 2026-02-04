@@ -1,7 +1,8 @@
+import type { AppConfig, SlackMcpWorkspaceConfig, SlackWorkspaceConfig } from '../../config/index.js';
 import type { Logger } from '../../core/logger.js';
-import type { Module, ModuleHealth, ModuleContext } from '../../core/types.js';
-import type { AppConfig, SlackWorkspaceConfig, SlackMcpWorkspaceConfig } from '../../config/index.js';
+import type { Module, ModuleContext, ModuleHealth } from '../../core/types.js';
 import type { PokeClient } from '../../integrations/poke/index.js';
+import { SlackClient } from '../../integrations/slack/index.js';
 import { SlackEventsModule } from './events/index.js';
 import { SlackMcpProxyModule } from './mcp-proxy/index.js';
 
@@ -34,6 +35,11 @@ export class SlackModule implements Module {
     // Initialize Slack Events modules for each workspace
     if (this.config.slack.events.enabled) {
       for (const workspaceConfig of this.config.slack.events.workspaces) {
+        const slackClient = new SlackClient(
+          { botToken: workspaceConfig.botToken },
+          this.logger.child({ module: 'slack-client', workspace: workspaceConfig.name })
+        );
+
         const eventsModule = new SlackEventsModule(
           {
             workspace: workspaceConfig.name,
@@ -42,6 +48,7 @@ export class SlackModule implements Module {
             channelBlocklist: workspaceConfig.channelBlocklist,
           },
           this.pokeClient,
+          slackClient,
           this.logger.child({ module: 'slack-events', workspace: workspaceConfig.name })
         );
 

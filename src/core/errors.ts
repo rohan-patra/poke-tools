@@ -30,3 +30,10 @@ export class PokeApiError extends AppError {
     this.name = 'PokeApiError';
   }
 }
+
+export class SlackApiError extends AppError {
+  constructor(message: string, statusCode: number, details?: Record<string, unknown>) {
+    super(message, 'SLACK_API_ERROR', statusCode, details);
+    this.name = 'SlackApiError';
+  }
+}
