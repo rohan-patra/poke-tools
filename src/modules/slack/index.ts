@@ -65,7 +65,11 @@ export class SlackModule implements Module {
         });
 
         this.logger.info(
-          { workspace: workspaceConfig.name, endpoint: `/webhooks/${endpoint}` },
+          {
+            workspace: workspaceConfig.name,
+            endpoint: `/webhooks/${endpoint}`,
+            channelBlocklist: workspaceConfig.channelBlocklist,
+          },
           'Slack Events workspace initialized'
         );
       }

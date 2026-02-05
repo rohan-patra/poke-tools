@@ -92,7 +92,7 @@ export class SlackEventsModule {
 
     // Check if channel is in blocklist
     if (this.config.channelBlocklist.includes(event.channel)) {
-      this.logger.debug(
+      this.logger.info(
         { workspace: this.config.workspace, channel: event.channel },
         'Ignoring message from blocklisted channel'
       );

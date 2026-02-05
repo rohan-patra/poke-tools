@@ -1,6 +1,7 @@
 export interface SlackMessageEvent {
   type: 'message';
   subtype?: string;
+  bot_id?: string;
   channel: string;
   user: string;
   text: string;
@@ -110,8 +111,11 @@ function convertMrkdwnToPlainText(text: string): string {
 }
 
 /**
- * Checks if the event is a regular message (not a subtype like bot_message, channel_join, etc.)
+ * Checks if the event is a regular user message.
+ * Filters out:
+ * - Messages with subtypes (bot_message, channel_join, file_share, etc.)
+ * - App/bot messages that have a bot_id (modern Slack apps don't use subtype)
  */
 export function isRegularMessage(event: SlackMessageEvent): boolean {
-  return event.type === 'message' && !event.subtype;
+  return event.type === 'message' && !event.subtype && !event.bot_id;
 }
