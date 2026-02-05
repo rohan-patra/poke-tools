@@ -22,6 +22,7 @@ export interface SlackEventPayload {
 export interface MessageContext {
   channelName?: string;
   userName?: string;
+  permalink?: string;
 }
 
 /**
@@ -65,6 +66,11 @@ export function formatSlackMessageForPoke(
     parts.push(`from:${event.user} (${context.userName})`);
   } else {
     parts.push(`from:${event.user}`);
+  }
+
+  // Permalink to the message
+  if (context?.permalink) {
+    parts.push(`link:${context.permalink}`);
   }
 
   // The actual message content

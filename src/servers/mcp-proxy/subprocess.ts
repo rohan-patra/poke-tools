@@ -1,8 +1,8 @@
-import { spawn, type ChildProcess } from 'child_process';
-import { existsSync } from 'fs';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { EventEmitter } from 'events';
+import { type ChildProcess, spawn } from 'node:child_process';
+import { EventEmitter } from 'node:events';
+import { existsSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type { Logger } from '../../core/logger.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

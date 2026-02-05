@@ -1,5 +1,5 @@
-import type { Logger } from '../../core/logger.js';
 import { PokeApiError } from '../../core/errors.js';
+import type { Logger } from '../../core/logger.js';
 
 export interface PokeConfig {
   bearerToken: string;

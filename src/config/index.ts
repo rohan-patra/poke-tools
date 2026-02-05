@@ -1,4 +1,4 @@
-import { loadEnv, type SlackWorkspaceEnv, type SlackMcpWorkspaceEnv } from './env.js';
+import { loadEnv, type SlackMcpWorkspaceEnv, type SlackWorkspaceEnv } from './env.js';
 
 export interface SlackWorkspaceConfig {
   name: string;

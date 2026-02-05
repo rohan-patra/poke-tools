@@ -99,8 +99,8 @@ export class SlackEventsModule {
       return;
     }
 
-    // Fetch additional context (channel and user display names)
-    const context = await this.fetchMessageContext(event.channel, event.user);
+    // Fetch additional context (channel name, user name, permalink)
+    const context = await this.fetchMessageContext(event.channel, event.user, event.ts);
 
     const message = formatSlackMessageForPoke(event, this.config.workspace, context);
     this.logger.info(
@@ -111,13 +111,18 @@ export class SlackEventsModule {
     await this.pokeClient.sendInboundMessage(message);
   }
 
-  private async fetchMessageContext(channelId: string, userId: string): Promise<MessageContext> {
+  private async fetchMessageContext(
+    channelId: string,
+    userId: string,
+    messageTs: string
+  ): Promise<MessageContext> {
     const context: MessageContext = {};
 
-    // Fetch channel and user info in parallel
-    const [channelInfo, userInfo] = await Promise.all([
+    // Fetch channel info, user info, and permalink in parallel
+    const [channelInfo, userInfo, permalink] = await Promise.all([
       this.slackClient.getChannelInfo(channelId),
       this.slackClient.getUserInfo(userId),
+      this.slackClient.getMessagePermalink(channelId, messageTs),
     ]);
 
     if (channelInfo) {
@@ -125,7 +130,12 @@ export class SlackEventsModule {
     }
 
     if (userInfo) {
-      context.userName = userInfo.realName || userInfo.name;
+      // Prefer display_name, fall back to real_name, then username
+      context.userName = userInfo.displayName || userInfo.realName || userInfo.name;
+    }
+
+    if (permalink) {
+      context.permalink = permalink;
     }
 
     return context;

@@ -1,13 +1,13 @@
-import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import Fastify from 'fastify';
 import { loadConfig } from './config/index.js';
 import { createLogger } from './core/logger.js';
 import type { Module, ModuleContext } from './core/types.js';
-import { WebhookRouter } from './routers/webhooks.js';
-import { McpRouter } from './routers/mcp.js';
-import { PollingManager } from './servers/polling/index.js';
 import { PokeClient } from './integrations/poke/index.js';
 import { SlackModule } from './modules/slack/index.js';
+import { McpRouter } from './routers/mcp.js';
+import { WebhookRouter } from './routers/webhooks.js';
+import { PollingManager } from './servers/polling/index.js';
 
 async function main() {
   const config = loadConfig();

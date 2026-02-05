@@ -1,7 +1,7 @@
-import type { FastifyRequest, FastifyReply } from 'fastify';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 import type { Logger } from '../../../core/logger.js';
 import type { McpProxyHandler, ModuleHealth } from '../../../core/types.js';
-import { SubprocessManager, type SubprocessConfig } from '../../../servers/mcp-proxy/subprocess.js';
+import { type SubprocessConfig, SubprocessManager } from '../../../servers/mcp-proxy/subprocess.js';
 
 export interface SlackMcpConfig {
   name: string;
@@ -46,18 +46,23 @@ export class SlackMcpProxyModule {
 
     switch (this.config.authMode) {
       case 'browser':
+        // biome-ignore lint/complexity/useLiteralKeys: index signature requires bracket notation
         if (this.config.tokens.xoxc) env['SLACK_MCP_XOXC_TOKEN'] = this.config.tokens.xoxc;
+        // biome-ignore lint/complexity/useLiteralKeys: index signature requires bracket notation
         if (this.config.tokens.xoxd) env['SLACK_MCP_XOXD_TOKEN'] = this.config.tokens.xoxd;
         break;
       case 'oauth':
+        // biome-ignore lint/complexity/useLiteralKeys: index signature requires bracket notation
         if (this.config.tokens.xoxp) env['SLACK_MCP_XOXP_TOKEN'] = this.config.tokens.xoxp;
         break;
       case 'bot':
+        // biome-ignore lint/complexity/useLiteralKeys: index signature requires bracket notation
         if (this.config.tokens.xoxb) env['SLACK_MCP_XOXB_TOKEN'] = this.config.tokens.xoxb;
         break;
     }
 
     if (this.config.addMessageTool) {
+      // biome-ignore lint/complexity/useLiteralKeys: index signature requires bracket notation
       env['SLACK_MCP_ADD_MESSAGE_TOOL'] = this.config.addMessageTool;
     }
 

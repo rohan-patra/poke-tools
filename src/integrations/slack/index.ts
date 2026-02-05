@@ -9,6 +9,7 @@ export interface SlackUserInfo {
   id: string;
   name: string;
   realName?: string;
+  displayName?: string;
 }
 
 export interface SlackChannelInfo {
@@ -62,6 +63,12 @@ export class SlackClient {
           id: string;
           name: string;
           real_name?: string;
+          profile?: {
+            display_name?: string;
+            display_name_normalized?: string;
+            real_name?: string;
+            real_name_normalized?: string;
+          };
         };
       };
 
@@ -73,7 +80,8 @@ export class SlackClient {
       const userInfo: SlackUserInfo = {
         id: data.user.id,
         name: data.user.name,
-        realName: data.user.real_name,
+        realName: data.user.real_name || data.user.profile?.real_name,
+        displayName: data.user.profile?.display_name,
       };
 
       this.setInCache(cacheKey, userInfo);
@@ -128,6 +136,45 @@ export class SlackClient {
       return channelInfo;
     } catch (error) {
       this.logger.warn({ err: error, channelId }, 'Failed to fetch Slack channel info');
+      return null;
+    }
+  }
+
+  async getMessagePermalink(channelId: string, messageTs: string): Promise<string | null> {
+    try {
+      const params = new URLSearchParams({
+        channel: channelId,
+        message_ts: messageTs,
+      });
+
+      const response = await fetch(`${SLACK_API_BASE}/chat.getPermalink?${params}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${this.botToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new SlackApiError(`Failed to fetch message permalink: ${response.statusText}`, response.status);
+      }
+
+      const data = (await response.json()) as {
+        ok: boolean;
+        error?: string;
+        permalink?: string;
+      };
+
+      if (!data.ok || !data.permalink) {
+        this.logger.warn(
+          { channelId, messageTs, error: data.error },
+          'Slack API returned error for message permalink'
+        );
+        return null;
+      }
+
+      return data.permalink;
+    } catch (error) {
+      this.logger.warn({ err: error, channelId, messageTs }, 'Failed to fetch Slack message permalink');
       return null;
     }
   }

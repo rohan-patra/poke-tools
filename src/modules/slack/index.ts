@@ -147,6 +147,7 @@ export class SlackModule implements Module {
         const health = await ws.module.healthCheck();
         workspaceHealths[ws.config.name] = health;
       }
+      // biome-ignore lint/complexity/useLiteralKeys: index signature requires bracket notation
       details['events'] = {
         workspaces: workspaceHealths,
       };
@@ -163,6 +164,7 @@ export class SlackModule implements Module {
           overallStatus = 'degraded';
         }
       }
+      // biome-ignore lint/complexity/useLiteralKeys: index signature requires bracket notation
       details['mcp'] = {
         workspaces: mcpHealths,
       };

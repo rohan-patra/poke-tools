@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import type { FastifyRequest } from 'fastify';
 import { WebhookVerificationError } from '../../../core/errors.js';
 

@@ -1,6 +1,6 @@
-import type { FastifyRequest, FastifyReply } from 'fastify';
-import type { Logger } from './logger.js';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 import type { AppConfig } from '../config/index.js';
+import type { Logger } from './logger.js';
 
 export interface ModuleHealth {
   status: 'healthy' | 'degraded' | 'unhealthy';
