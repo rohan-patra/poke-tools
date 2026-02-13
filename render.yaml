@@ -38,4 +38,4 @@ services:
       - key: SLACK_MCP_1_ADD_MESSAGE_TOOL
         value: 'true'
       - key: SLACK_MCP_ENABLED_TOOLS
-        value: 'conversations_history,conversations_replies,conversations_add_message,reactions_add,reactions_remove,attachment_get_data,conversations_search_messages,channels_list,users_search,usergroups_list,usergroups_me,usergroups_create,usergroups_update,usergroups_users_update'
+        value: 'conversations_history,conversations_replies,conversations_add_message,reactions_add,reactions_remove,attachment_get_data,conversations_search_messages,channels_list,usergroups_list,usergroups_me,usergroups_create,usergroups_update,usergroups_users_update'

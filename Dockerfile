@@ -27,7 +27,7 @@ COPY --from=builder /app/package.json ./
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV SLACK_MCP_BINARY_PATH=/usr/local/bin/slack-mcp-server
-ENV SLACK_MCP_ENABLED_TOOLS=conversations_history,conversations_replies,conversations_add_message,reactions_add,reactions_remove,attachment_get_data,conversations_search_messages,channels_list,users_search,usergroups_list,usergroups_me,usergroups_create,usergroups_update,usergroups_users_update
+ENV SLACK_MCP_ENABLED_TOOLS=conversations_history,conversations_replies,conversations_add_message,reactions_add,reactions_remove,attachment_get_data,conversations_search_messages,channels_list,usergroups_list,usergroups_me,usergroups_create,usergroups_update,usergroups_users_update
 
 EXPOSE 3000
 CMD ["node", "dist/index.js"]
