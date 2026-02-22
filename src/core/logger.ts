@@ -24,6 +24,9 @@ export function createLogger(env: 'development' | 'staging' | 'production'): Log
       '*.xoxd',
       '*.xoxp',
       '*.xoxb',
+      '*.clientSecret',
+      '*.clientPasswd',
+      '*.BW_SESSION',
     ],
   });
 }

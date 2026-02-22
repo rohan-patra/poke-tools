@@ -22,6 +22,18 @@ export interface SlackMcpWorkspaceConfig {
   addMessageTool?: string;
 }
 
+export interface BitwardenConfig {
+  enabled: boolean;
+  endpoint: string;
+  internalPort: number;
+  cliPath: string;
+  clientId: string;
+  clientSecret: string;
+  clientPasswd: string;
+  organizationId: string;
+  collectionId: string;
+}
+
 export interface AppConfig {
   env: 'development' | 'staging' | 'production';
   port: number;
@@ -43,6 +55,8 @@ export interface AppConfig {
       workspaces: SlackMcpWorkspaceConfig[];
     };
   };
+
+  bitwarden: BitwardenConfig;
 }
 
 export function loadConfig(): AppConfig {
@@ -88,6 +102,18 @@ export function loadConfig(): AppConfig {
           })
         ),
       },
+    },
+
+    bitwarden: {
+      enabled: env.BITWARDEN_MCP_ENABLED,
+      endpoint: env.BITWARDEN_MCP_ENDPOINT,
+      internalPort: env.BITWARDEN_MCP_INTERNAL_PORT,
+      cliPath: env.BITWARDEN_CLI_PATH,
+      clientId: env.BITWARDEN_CLIENT_ID ?? '',
+      clientSecret: env.BITWARDEN_CLIENT_SECRET ?? '',
+      clientPasswd: env.BITWARDEN_CLIENT_PASSWD ?? '',
+      organizationId: env.BITWARDEN_ORGANIZATION_ID ?? '',
+      collectionId: env.BITWARDEN_COLLECTION_ID ?? '',
     },
   };
 }

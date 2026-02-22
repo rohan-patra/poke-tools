@@ -37,3 +37,10 @@ export class SlackApiError extends AppError {
     this.name = 'SlackApiError';
   }
 }
+
+export class BitwardenCliError extends AppError {
+  constructor(message: string, details?: Record<string, unknown>) {
+    super(message, 'BITWARDEN_CLI_ERROR', 500, details);
+    this.name = 'BitwardenCliError';
+  }
+}

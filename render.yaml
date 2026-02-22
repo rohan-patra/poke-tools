@@ -39,3 +39,19 @@ services:
         value: 'true'
       - key: SLACK_MCP_ENABLED_TOOLS
         value: 'conversations_history,conversations_replies,conversations_add_message,reactions_add,reactions_remove,attachment_get_data,conversations_search_messages,channels_list,usergroups_list,usergroups_me,usergroups_create,usergroups_update,usergroups_users_update'
+      - key: BITWARDEN_MCP_ENABLED
+        value: 'true'
+      - key: BITWARDEN_MCP_ENDPOINT
+        sync: false
+      - key: BITWARDEN_CLIENT_ID
+        sync: false
+      - key: BITWARDEN_CLIENT_SECRET
+        sync: false
+      - key: BITWARDEN_CLIENT_PASSWD
+        sync: false
+      - key: BITWARDEN_ORGANIZATION_ID
+        sync: false
+      - key: BITWARDEN_COLLECTION_ID
+        sync: false
+      - key: BITWARDEN_CLI_PATH
+        value: /usr/local/bin/bw

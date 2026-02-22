@@ -55,6 +55,17 @@ const envSchema = z.object({
   SLACK_MCP_ENABLED: z.coerce.boolean().default(false),
   SLACK_MCP_BINARY_PATH: z.string().default('slack-mcp-server'),
   SLACK_MCP_INTERNAL_PORT_START: z.coerce.number().default(13080),
+
+  // Bitwarden MCP
+  BITWARDEN_MCP_ENABLED: z.coerce.boolean().default(false),
+  BITWARDEN_MCP_ENDPOINT: z.string().default('d34d793bfe874d78a15a7f75c1aff53e'),
+  BITWARDEN_MCP_INTERNAL_PORT: z.coerce.number().default(13180),
+  BITWARDEN_CLIENT_ID: z.string().optional(),
+  BITWARDEN_CLIENT_SECRET: z.string().optional(),
+  BITWARDEN_CLIENT_PASSWD: z.string().optional(),
+  BITWARDEN_ORGANIZATION_ID: z.string().optional(),
+  BITWARDEN_COLLECTION_ID: z.string().optional(),
+  BITWARDEN_CLI_PATH: z.string().default('bw'),
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -220,6 +231,22 @@ export function loadEnv(): LoadEnvResult {
     console.error('SLACK_MCP_ENABLED is true but no MCP workspaces defined.');
     console.error('Define at least one workspace using SLACK_MCP_1_NAME, SLACK_MCP_1_ENDPOINT, etc.');
     process.exit(1);
+  }
+
+  // Validate Bitwarden config when enabled
+  if (result.data.BITWARDEN_MCP_ENABLED) {
+    const missing: string[] = [];
+    if (!result.data.BITWARDEN_CLIENT_ID) missing.push('BITWARDEN_CLIENT_ID');
+    if (!result.data.BITWARDEN_CLIENT_SECRET) missing.push('BITWARDEN_CLIENT_SECRET');
+    if (!result.data.BITWARDEN_CLIENT_PASSWD) missing.push('BITWARDEN_CLIENT_PASSWD');
+    if (!result.data.BITWARDEN_ORGANIZATION_ID) missing.push('BITWARDEN_ORGANIZATION_ID');
+    if (!result.data.BITWARDEN_COLLECTION_ID) missing.push('BITWARDEN_COLLECTION_ID');
+
+    if (missing.length > 0) {
+      console.error('BITWARDEN_MCP_ENABLED is true but required variables are missing:');
+      console.error(`  ${missing.join(', ')}`);
+      process.exit(1);
+    }
   }
 
   return {

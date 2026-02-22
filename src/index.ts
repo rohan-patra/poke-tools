@@ -4,6 +4,7 @@ import { loadConfig } from './config/index.js';
 import { createLogger } from './core/logger.js';
 import type { Module, ModuleContext } from './core/types.js';
 import { PokeClient } from './integrations/poke/index.js';
+import { BitwardenModule } from './modules/bitwarden/index.js';
 import { SlackModule } from './modules/slack/index.js';
 import { McpRouter } from './routers/mcp.js';
 import { WebhookRouter } from './routers/webhooks.js';
@@ -72,6 +73,16 @@ async function main() {
     if (endpoints.mcp.length > 0) {
       logger.info({ endpoints: endpoints.mcp }, '[slack-mcp] MCP proxy endpoints registered');
     }
+  }
+
+  // Bitwarden module
+  if (config.bitwarden.enabled) {
+    const bitwardenModule = new BitwardenModule(config, moduleContext, logger.child({ module: 'bitwarden' }));
+    await bitwardenModule.initialize();
+    modules.push(bitwardenModule);
+
+    const endpoints = bitwardenModule.getEndpoints();
+    logger.info({ endpoint: endpoints.mcp }, '[bitwarden-mcp] MCP proxy endpoint registered');
   }
 
   // Attach routers to Fastify
