@@ -6,22 +6,25 @@ import type { BitwardenCli } from './cli.js';
 import type { BitwardenSessionManager } from './session.js';
 import { registerAllTools } from './tools/index.js';
 
+function createMcpServerInstance(cli: BitwardenCli, sessionManager: BitwardenSessionManager): McpServer {
+  const mcpServer = new McpServer({
+    name: 'bitwarden-mcp-server',
+    version: '1.0.0',
+  });
+  registerAllTools(mcpServer, cli, sessionManager);
+  return mcpServer;
+}
+
 export async function createBitwardenMcpServer(
   cli: BitwardenCli,
   sessionManager: BitwardenSessionManager,
   port: number,
   logger: Logger
-): Promise<{ mcpServer: McpServer; httpServer: Server }> {
-  const mcpServer = new McpServer({
-    name: 'bitwarden-mcp-server',
-    version: '1.0.0',
-  });
-
-  registerAllTools(mcpServer, cli, sessionManager);
-
+): Promise<{ httpServer: Server }> {
   const httpServer = createServer(async (req, res) => {
     if (req.method === 'POST' && (req.url === '/mcp' || req.url === '/mcp/')) {
       try {
+        const mcpServer = createMcpServerInstance(cli, sessionManager);
         const transport = new StreamableHTTPServerTransport({
           sessionIdGenerator: undefined,
         });
@@ -47,5 +50,5 @@ export async function createBitwardenMcpServer(
     });
   });
 
-  return { mcpServer, httpServer };
+  return { httpServer };
 }
